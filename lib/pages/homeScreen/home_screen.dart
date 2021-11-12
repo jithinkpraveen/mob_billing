@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mob_billing/db/database.dart';
 import 'package:mob_billing/model/user_modes.dart';
+import 'package:mob_billing/pages/add_record/add_record_page.dart';
+import 'package:mob_billing/pages/brandScreen/brand_screen.dart';
+import 'package:mob_billing/pages/clientsScreen/clint_home_page.dart';
+import 'package:mob_billing/pages/servicesScreen/services_home_page.dart';
+import 'package:mob_billing/pages/statusScreen/status_services.dart';
+// import 'package:mob_billing/pages/clients/users_home_page.dart';
+// import 'package:mob_billing/pages/clients/clint_home_page.dart';
 import 'package:mob_billing/services/activate_app.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,7 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
         BottomNavigationBarItem(icon: Icon(Icons.history), label: "history"),
       ]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const AddRecordPage()),
+              (route) => true);
+        },
         backgroundColor: const Color(0xff39A2DB),
         child: const Icon(Icons.add),
       ),
@@ -105,13 +116,26 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               children: [
                 buildHomeIcon(
-                    const Color(0xffF9B50F), "Brands", "assets/brand.svg"),
+                  color: const Color(0xffF9B50F),
+                  name: "Brands",
+                  icon: "assets/brand.svg",
+                  route: 1,
+                ),
                 buildHomeIcon(
-                    const Color(0xff7974ED), "Statuses", "assets/status.svg"),
+                    color: const Color(0xff7974ED),
+                    name: "Statuses",
+                    icon: "assets/status.svg",
+                    route: 2),
                 buildHomeIcon(
-                    const Color(0xff83D15E), "Services", "assets/service.svg"),
+                    color: const Color(0xff83D15E),
+                    name: "Services",
+                    icon: "assets/service.svg",
+                    route: 3),
                 buildHomeIcon(
-                    const Color(0xffF48F32), "Clients", "assets/clints.svg"),
+                    color: const Color(0xffF48F32),
+                    name: "Clients",
+                    icon: "assets/clints.svg",
+                    route: 4)
                 // buildHomeIcon(Colors.red, "ser"),
               ],
             ),
@@ -226,11 +250,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future getallUsers() async {
-    setState(() => isLoading = true);
-    users = await LocalDb.instance.getAllUsers();
-    setState(() => isLoading = false);
-  }
+  // Future getallUsers() async {
+  //   setState(() => isLoading = true);
+  //   users = await LocalDb.instance.getAllUsers();
+  //   setState(() => isLoading = false);
+  // }
 
   // Future addUser() async {
   //   setState(() => isLoading = true);
@@ -242,36 +266,50 @@ class _HomeScreenState extends State<HomeScreen> {
   //   setState(() => isLoading = false);
   //   return res;
   // }
-}
 
-buildHomeIcon(Color color, String name, String icon) {
-  return MaterialButton(
-    onPressed: () {},
-    child: Column(
-      children: [
-        Container(
-          height: 52,
-          width: 52,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
-          child: Center(
-            child: SvgPicture.asset(
-              icon,
-              // height: 50,
-              // width: 50,
-              color: Colors.white,
+  buildHomeIcon(
+      {required Color color,
+      required String name,
+      required String icon,
+      required int route}) {
+    return MaterialButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => route == 1
+                  ? const BrandHomePage()
+                  : route == 2
+                      ? const StatusHomePage()
+                      : route == 3
+                          ? const ServicesHomePage()
+                          : const ClintHomePage()),
+        );
+      },
+      child: Column(
+        children: [
+          Container(
+            height: 52,
+            width: 52,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+            ),
+            child: Center(
+              child: SvgPicture.asset(
+                icon,
+                color: Colors.white,
+              ),
             ),
           ),
-        ),
-        Text(
-          name,
-          style: const TextStyle(
-            color: Color(0xff515979),
-          ),
-        )
-      ],
-    ),
-  );
+          Text(
+            name,
+            style: const TextStyle(
+              color: Color(0xff515979),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
